@@ -9,15 +9,18 @@ class Cart with ChangeNotifier {
   void addItem(String itemId, CartItem item) {
     _cartItems.addAll({itemId: item});
     notifyListeners();
-    // print(_cartItems.length);
-    // _cartItems.forEach((key, itemInCart) {
-    //   print(
-    //       '${itemInCart.productName},${itemInCart.quantity},${itemInCart.productSize.sizeName},${(itemInCart.combo?.comboSizeName) ?? "no combo"},${itemInCart.selectedExtras.map((extra) => extra.extraName)}');
-    // });
   }
 
   Map<String, CartItem> get cartItems {
     return {..._cartItems};
+  }
+
+  int get itemsCount {
+    int count = 0;
+    _cartItems.values.forEach((cartItem) {
+      count = count + cartItem.quantity;
+    });
+    return count;
   }
 
   double itemPrice(CartItem item) {

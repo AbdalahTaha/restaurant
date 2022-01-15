@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant_test/widgets/cart_badge.dart';
 import '../models/product.dart';
 import '../services/fetch_home_page_products.dart';
 import '../widgets/category_item.dart';
@@ -6,6 +7,8 @@ import '../widgets/product_item.dart';
 import 'cart_screen.dart';
 import 'product_dialog.dart';
 import '../models/categories.dart';
+import 'package:provider/provider.dart';
+import '../providers/cart.dart';
 
 class ProductsOverviewScreen extends StatefulWidget {
   @override
@@ -32,18 +35,21 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
       appBar: AppBar(
         title: Text('All Products'),
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return CartScreen();
-                  },
-                ),
-              );
-            },
-            icon: Icon(Icons.shopping_cart),
+          Consumer<Cart>(
+            builder: (_, cart, ch) => Badge(child: ch!, value: cart.itemsCount),
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return CartScreen();
+                    },
+                  ),
+                );
+              },
+              icon: Icon(Icons.shopping_cart),
+            ),
           ),
         ],
       ),
