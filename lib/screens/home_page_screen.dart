@@ -3,6 +3,7 @@ import '../models/product.dart';
 import '../services/fetch_home_page_products.dart';
 import '../widgets/category_item.dart';
 import '../widgets/product_item.dart';
+import 'cart_screen.dart';
 import 'product_dialog.dart';
 import '../models/categories.dart';
 
@@ -30,6 +31,21 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('All Products'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return CartScreen();
+                  },
+                ),
+              );
+            },
+            icon: Icon(Icons.shopping_cart),
+          ),
+        ],
       ),
       body: _isLoading
           ? Center(

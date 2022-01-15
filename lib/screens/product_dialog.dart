@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:restaurant_test/models/combo.dart';
 import '../models/extras.dart';
 import '../models/product.dart';
 import '../widgets/product_detail.dart';
 import '../models/product_size.dart';
 import '../models/cart_item.dart';
+import '../providers/cart.dart';
+import 'package:provider/provider.dart';
 
 class ProductDialog extends StatefulWidget {
   final Product selectedProduct;
@@ -40,6 +41,7 @@ class _ProductDialogState extends State<ProductDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final cart = Provider.of<Cart>(context, listen: false);
     return Dialog(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.30,
@@ -174,15 +176,19 @@ class _ProductDialogState extends State<ProductDialog> {
                   // else
                   //   print('no combo');
                   // print([...selectedExtra]);
-                  CartItem(
-                      productName: widget.selectedProduct.productTitle,
-                      productSize: widget
-                          .selectedProduct.productSizes[selectedSizeIndex],
-                      combo: selectedComboIndex == -1
-                          ? null
-                          : widget.selectedProduct.combos[selectedComboIndex],
-                      selectedExtras: [...selectedExtra],
-                      quantity: quantity);
+                  cart.addItem(
+                    DateTime.now().toString(),
+                    CartItem(
+                        productName: widget.selectedProduct.productTitle,
+                        productSize: widget
+                            .selectedProduct.productSizes[selectedSizeIndex],
+                        combo: selectedComboIndex == -1
+                            ? null
+                            : widget.selectedProduct.combos[selectedComboIndex],
+                        selectedExtras: [...selectedExtra],
+                        quantity: quantity),
+                  );
+                  Navigator.pop(context);
                 },
                 child: Text('Add To Cart'),
                 style: ButtonStyle(

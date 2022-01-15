@@ -1,0 +1,73 @@
+import 'package:restaurant_test/models/extras.dart';
+
+import '../models/cart_item.dart';
+import 'package:flutter/foundation.dart';
+
+class Cart with ChangeNotifier {
+  Map<String, CartItem> _cartItems = {};
+
+  void addItem(String itemId, CartItem item) {
+    _cartItems.addAll({itemId: item});
+    notifyListeners();
+    // print(_cartItems.length);
+    // _cartItems.forEach((key, itemInCart) {
+    //   print(
+    //       '${itemInCart.productName},${itemInCart.quantity},${itemInCart.productSize.sizeName},${(itemInCart.combo?.comboSizeName) ?? "no combo"},${itemInCart.selectedExtras.map((extra) => extra.extraName)}');
+    // });
+  }
+
+  Map<String, CartItem> get cartItems {
+    return {..._cartItems};
+  }
+
+  double itemPrice(CartItem item) {
+    double productPrice = item.productSize.sizePrice;
+    double comboPrice = item.combo?.comboPrice ?? 0.0;
+    double extrasPrice = 0.0;
+    for (Extra extra in item.selectedExtras)
+      extrasPrice = extrasPrice + extra.extraPrice;
+    return (productPrice + comboPrice + extrasPrice) * item.quantity;
+  }
+
+  double get cartTotalPrice {
+    double totalPrice = 0.0;
+    for (CartItem item in _cartItems.values)
+      totalPrice = totalPrice + itemPrice(item);
+    return totalPrice;
+  }
+
+  void removeItem(String itemId) {
+    _cartItems.remove(itemId);
+    notifyListeners();
+  }
+
+  void increaseItem(String itemId, CartItem item) {
+    _cartItems.update(
+      itemId,
+      (existingItem) => CartItem(
+        productName: existingItem.productName,
+        productSize: existingItem.productSize,
+        selectedExtras: existingItem.selectedExtras,
+        combo: existingItem.combo,
+        quantity: existingItem.quantity + 1,
+      ),
+    );
+    notifyListeners();
+  }
+
+  void decreaseItem(String itemId, CartItem item) {
+    if (item.quantity > 1) {
+      _cartItems.update(
+        itemId,
+        (existingItem) => CartItem(
+          productName: existingItem.productName,
+          productSize: existingItem.productSize,
+          selectedExtras: existingItem.selectedExtras,
+          combo: existingItem.combo,
+          quantity: existingItem.quantity - 1,
+        ),
+      );
+      notifyListeners();
+    }
+  }
+}
