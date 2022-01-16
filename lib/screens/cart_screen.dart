@@ -26,14 +26,26 @@ class CartScreen extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ListView(
-                children: cart.cartItems.entries.map((cartItem) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ItemInCart(
-                    cartItem: cartItem.value, cartItemKey: cartItem.key),
-              );
-            }).toList()),
+            child: ListView.builder(
+                itemCount: cart.cartItems.length,
+                itemBuilder: (context, i) {
+                  // print(cart.cartItems.values.toList()[i].cartItemTotalPrice);
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ItemInCart(
+                        cartItem: cart.cartItems.values.toList()[i],
+                        cartItemKey: cart.cartItems.keys.toList()[i]),
+                  );
+                }),
+            // ListView(
+            //     children: cart.cartItems.entries.map((cartItem) {
+            //   print(cartItem.value.productName);
+            //   return Padding(
+            //     padding: const EdgeInsets.all(8.0),
+            //     child: ItemInCart(
+            //         cartItem: cartItem.value, cartItemKey: cartItem.key),
+            //   );
+            // }).toList()),
           ),
         ],
       ),

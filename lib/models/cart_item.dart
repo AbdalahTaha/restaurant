@@ -7,12 +7,15 @@ class CartItem {
   final ProductSize productSize;
   final Combo? combo;
   final List<Extra> selectedExtras;
+  final double cartItemTotalPrice;
   int quantity;
-  CartItem({
-    required this.productName,
-    required this.productSize,
-    this.combo,
-    required this.selectedExtras,
-    required this.quantity,
-  });
+  final int productId;
+  CartItem(
+      {required this.productName,
+      required this.productSize,
+      this.combo,
+      required this.selectedExtras,
+      required this.quantity,
+      required this.productId,
+      required this.cartItemTotalPrice});
 }

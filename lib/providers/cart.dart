@@ -24,12 +24,7 @@ class Cart with ChangeNotifier {
   }
 
   double itemPrice(CartItem item) {
-    double productPrice = item.productSize.sizePrice;
-    double comboPrice = item.combo?.comboPrice ?? 0.0;
-    double extrasPrice = 0.0;
-    for (Extra extra in item.selectedExtras)
-      extrasPrice = extrasPrice + extra.extraPrice;
-    return (productPrice + comboPrice + extrasPrice) * item.quantity;
+    return item.cartItemTotalPrice * item.quantity;
   }
 
   double get cartTotalPrice {
@@ -53,6 +48,8 @@ class Cart with ChangeNotifier {
         selectedExtras: existingItem.selectedExtras,
         combo: existingItem.combo,
         quantity: existingItem.quantity + 1,
+        productId: existingItem.productId,
+        cartItemTotalPrice: existingItem.cartItemTotalPrice,
       ),
     );
     notifyListeners();
@@ -68,6 +65,8 @@ class Cart with ChangeNotifier {
           selectedExtras: existingItem.selectedExtras,
           combo: existingItem.combo,
           quantity: existingItem.quantity - 1,
+          productId: existingItem.productId,
+          cartItemTotalPrice: existingItem.cartItemTotalPrice,
         ),
       );
       notifyListeners();

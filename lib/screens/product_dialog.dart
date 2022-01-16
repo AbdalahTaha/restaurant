@@ -39,6 +39,15 @@ class _ProductDialogState extends State<ProductDialog> {
     super.initState();
   }
 
+  double calculateCartItemPrice(
+      ProductSize productSize, Combo? combo, List<Extra> extras) {
+    double productPrice = productSize.sizePrice;
+    double comboPrice = combo?.comboPrice ?? 0.0;
+    double extrasPrice = 0.0;
+    for (Extra extra in extras) extrasPrice += extra.extraPrice;
+    return productPrice + comboPrice + extrasPrice;
+  }
+
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context, listen: false);
@@ -126,12 +135,11 @@ class _ProductDialogState extends State<ProductDialog> {
                   setState(() {
                     _productExtras[newIndex] = !_productExtras[newIndex];
                   });
-                  if (selectedExtra
-                      .contains(widget.selectedProduct.extras[newIndex]))
+                  if (_productExtras[newIndex])
+                    selectedExtra.add(widget.selectedProduct.extras[newIndex]);
+                  else
                     selectedExtra
                         .remove(widget.selectedProduct.extras[newIndex]);
-                  else
-                    selectedExtra.add(widget.selectedProduct.extras[newIndex]);
                 },
               ),
             ),
@@ -186,7 +194,16 @@ class _ProductDialogState extends State<ProductDialog> {
                             ? null
                             : widget.selectedProduct.combos[selectedComboIndex],
                         selectedExtras: [...selectedExtra],
-                        quantity: quantity),
+                        quantity: quantity,
+                        productId: widget.selectedProduct.id,
+                        cartItemTotalPrice: calculateCartItemPrice(
+                            widget.selectedProduct
+                                .productSizes[selectedSizeIndex],
+                            selectedComboIndex == -1
+                                ? null
+                                : widget
+                                    .selectedProduct.combos[selectedComboIndex],
+                            [...selectedExtra])),
                   );
                   Navigator.pop(context);
                 },

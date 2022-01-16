@@ -8,16 +8,19 @@ class Product {
   late final List<Extra> extras;
   late final List<Combo> combos;
   late final List<ProductSize> productSizes;
+  late final int id;
   Product(
       {required this.productTitle,
       required this.productImage,
       required this.extras,
       required this.combos,
-      required this.productSizes});
+      required this.productSizes,
+      required this.id});
 
   Product.fromJson(Map<String, dynamic> json) {
     productImage = json['product_image'];
     productTitle = json['product_title'];
+    id = json['product_id'];
 
     List<Extra> _extras = <Extra>[];
     if (json['extras'] != null) {
@@ -46,6 +49,7 @@ class Product {
   Product.fromJsonPackage(Map<String, dynamic> json) {
     productImage = json['image'];
     productTitle = json['package_name'];
+    id = json['package_id'];
     extras = [];
     combos = [];
 
