@@ -24,3 +24,5 @@ class ProductDetail extends StatelessWidget {
     );
   }
 }
+
+//const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),

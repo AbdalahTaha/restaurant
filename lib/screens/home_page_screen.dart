@@ -19,10 +19,12 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   bool _isLoading = true;
 
   List<Product> productsGrid = [];
+  int selectedCategory = 0;
   @override
   void initState() {
     FetchProducts.getCategoriesAndPackages().then((_) => {
           setState(() {
+            productsGrid = Categories.categories[0].products;
             _isLoading = false;
           }),
         });
@@ -67,10 +69,13 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                     scrollDirection: Axis.vertical,
                     itemCount: Categories.categories.length,
                     itemBuilder: (context, i) => GestureDetector(
-                        child:
-                            CategoryItem(Categories.categories[i].categoryName),
+                        child: CategoryItem(
+                          Categories.categories[i].categoryName,
+                          isSelected: i == selectedCategory ? true : false,
+                        ),
                         onTap: () {
                           setState(() {
+                            selectedCategory = i;
                             productsGrid = Categories.categories[i].products;
                           });
                         }),

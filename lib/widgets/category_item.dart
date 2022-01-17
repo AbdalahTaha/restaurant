@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 
 class CategoryItem extends StatelessWidget {
   final title;
-  CategoryItem(this.title);
+  final bool isSelected;
+  CategoryItem(this.title, {required this.isSelected});
 
   @override
   Widget build(BuildContext context) {
-    Color categoryColor = Colors.blue;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+      padding:
+          EdgeInsets.symmetric(vertical: 3, horizontal: isSelected ? 5 : 10),
       child: ListTile(
-        tileColor: categoryColor,
+        tileColor: isSelected ? Colors.lightBlueAccent : Colors.blue,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         title: Text(
           title,
