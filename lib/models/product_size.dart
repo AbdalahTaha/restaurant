@@ -15,5 +15,6 @@ class ProductSize {
   ProductSize.fromJsonPackage(int price) {
     sizeName = "Regular";
     sizePrice = price.toDouble();
+    id = -2;
   }
 }

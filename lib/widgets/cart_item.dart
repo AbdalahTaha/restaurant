@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 class ItemInCart extends StatelessWidget {
   final CartItem cartItem;
-  final String cartItemKey;
+  final List<List<int>> cartItemKey;
   ItemInCart({required this.cartItem, required this.cartItemKey});
 
   @override
@@ -61,6 +61,18 @@ class ItemInCart extends StatelessWidget {
                         Text('${cartItem.combo?.comboPrice ?? '0'} LE')
                       ],
                     ),
+                    if (cartItem.selectedComboOptions != null)
+                      ListView(
+                          shrinkWrap: true,
+                          children:
+                              cartItem.selectedComboOptions!.map((option) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(option.itemName),
+                              ],
+                            );
+                          }).toList()),
                     ListView(
                       shrinkWrap: true,
                       children: cartItem.selectedExtras.isNotEmpty

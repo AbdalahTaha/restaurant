@@ -7,6 +7,7 @@ import '../models/product_size.dart';
 import '../models/cart_item.dart';
 import '../providers/cart.dart';
 import 'package:provider/provider.dart';
+import '../models/option_product.dart';
 
 class ProductDialog extends StatefulWidget {
   final Product selectedProduct;
@@ -23,8 +24,11 @@ class _ProductDialogState extends State<ProductDialog> {
   int selectedSizeIndex = 0;
   int selectedComboIndex = -1;
   List<Extra> selectedExtra = [];
-
+  List<bool> _comboOptionsList = [];
+  List<ComboOption> selectedComboOptions = [];
+  int selectedComboOptionIndex = 0;
   int quantity = 1;
+  bool hasOp = false;
 
   @override
   void initState() {
@@ -46,6 +50,14 @@ class _ProductDialogState extends State<ProductDialog> {
     double extrasPrice = 0.0;
     for (Extra extra in extras) extrasPrice += extra.extraPrice;
     return productPrice + comboPrice + extrasPrice;
+  }
+
+  List<List<int>> cartItemId(int productId, int productSizeId, int comboId,
+      List<int> comboOptionsId, List<int> extrasId) {
+    return [
+      [productId, productSizeId, comboId, ...comboOptionsId],
+      [...extrasId]
+    ];
   }
 
   @override
@@ -96,6 +108,34 @@ class _ProductDialogState extends State<ProductDialog> {
                 }).toList(),
                 isSelected: _productCombos,
                 onPressed: (int newIndex) {
+                  selectedComboOptions.clear();
+                  widget.selectedProduct.combos[newIndex].comboItems
+                      .forEach((item) {
+                    selectedComboOptions.add(ComboOption(
+                        id: item.id,
+                        itemName: item.itemName,
+                        itemSize: item.itemSize));
+                  });
+                  if (selectedComboIndex != newIndex &&
+                      widget.selectedProduct.combos[newIndex].comboItems
+                          .where((item) => item.hasOptions)
+                          .isNotEmpty) {
+                    hasOp = true;
+                    _comboOptionsList.clear();
+                    for (int i = 0;
+                        i <
+                            widget.selectedProduct.combos[newIndex].comboItems
+                                .firstWhere((item) => item.hasOptions)
+                                .productOptions
+                                .length;
+                        i++) {
+                      if (i == 0)
+                        _comboOptionsList.add(true);
+                      else
+                        _comboOptionsList.add(false);
+                    }
+                  } else
+                    hasOp = false;
                   if (selectedComboIndex == -1) {
                     setState(() {
                       _productCombos[newIndex] = true;
@@ -116,6 +156,42 @@ class _ProductDialogState extends State<ProductDialog> {
                 },
               ),
             ),
+            if (selectedComboIndex != -1 && hasOp)
+              Container(
+                  child: ToggleButtons(
+                renderBorder: false,
+                fillColor: Colors.grey[400],
+                children: widget
+                    .selectedProduct.combos[selectedComboIndex].comboItems
+                    .firstWhere((item) => item.hasOptions)
+                    .productOptions
+                    .map((ComboOption element) {
+                  return ProductDetail(element.itemName);
+                }).toList(),
+                isSelected: _comboOptionsList,
+                onPressed: (int newIndex) {
+                  if (newIndex != selectedComboOptionIndex) {
+                    setState(() {
+                      _comboOptionsList[selectedComboOptionIndex] = false;
+                      _comboOptionsList[newIndex] = true;
+                    });
+                    selectedComboOptionIndex = newIndex;
+                  }
+                  final index = widget
+                      .selectedProduct.combos[selectedComboIndex].comboItems
+                      .indexWhere((element) => element.hasOptions);
+                  selectedComboOptions.removeAt(index);
+                  final selectedOption = widget
+                      .selectedProduct
+                      .combos[selectedComboIndex]
+                      .comboItems[index]
+                      .productOptions[newIndex];
+                  selectedComboOptions.add(ComboOption(
+                      itemName: selectedOption.itemName,
+                      itemSize: selectedOption.itemSize,
+                      id: selectedOption.id));
+                },
+              )),
             Container(
               height: 2.0,
               color: Colors.grey[600],
@@ -175,17 +251,21 @@ class _ProductDialogState extends State<ProductDialog> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 onPressed: () {
-                  // print(widget.selectedProduct.productTitle);
-                  // print(widget.selectedProduct.productSizes[selectedSizeIndex]
-                  //     .sizeName);
-                  // if (selectedComboIndex != -1)
-                  //   print(widget.selectedProduct.combos[selectedComboIndex]
-                  //       .comboSizeName);
-                  // else
-                  //   print('no combo');
-                  // print([...selectedExtra]);
                   cart.addItem(
-                    DateTime.now().toString(),
+                    cartItemId(
+                        widget.selectedProduct.id,
+                        widget
+                            .selectedProduct.productSizes[selectedSizeIndex].id,
+                        selectedComboIndex == -1
+                            ? -1
+                            : widget
+                                .selectedProduct.combos[selectedComboIndex].id,
+                        selectedComboIndex == -1
+                            ? [-1]
+                            : selectedComboOptions
+                                .map((option) => option.id)
+                                .toList(),
+                        selectedExtra.map((extra) => extra.id).toList()),
                     CartItem(
                         productName: widget.selectedProduct.productTitle,
                         productSize: widget
@@ -203,7 +283,10 @@ class _ProductDialogState extends State<ProductDialog> {
                                 ? null
                                 : widget
                                     .selectedProduct.combos[selectedComboIndex],
-                            [...selectedExtra])),
+                            [...selectedExtra]),
+                        selectedComboOptions: selectedComboIndex == -1
+                            ? null
+                            : [...selectedComboOptions]),
                   );
                   Navigator.pop(context);
                 },
