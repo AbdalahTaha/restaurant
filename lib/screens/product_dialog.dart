@@ -8,6 +8,7 @@ import '../models/cart_item.dart';
 import '../providers/cart.dart';
 import 'package:provider/provider.dart';
 import '../models/option_product.dart';
+import '../widgets/custom_toggle_button.dart';
 
 class ProductDialog extends StatefulWidget {
   final Product selectedProduct;
@@ -74,154 +75,131 @@ class _ProductDialogState extends State<ProductDialog> {
               widget.selectedProduct.productTitle,
               style: TextStyle(color: Colors.black, fontSize: 22.0),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ToggleButtons(
-                  renderBorder: false,
-                  fillColor: Colors.grey[400],
-                  children: widget.selectedProduct.productSizes
-                      .map((ProductSize element) {
-                    return ProductDetail(element.sizeName);
-                  }).toList(),
-                  isSelected: _productSizes,
-                  onPressed: (int newIndex) {
-                    if (newIndex != selectedSizeIndex) {
-                      setState(() {
-                        _productSizes[selectedSizeIndex] = false;
-                        _productSizes[newIndex] = true;
-                      });
-                      selectedSizeIndex = newIndex;
-                    }
-                  }),
-            ),
-            Container(
-              height: 2.0,
-              color: Colors.grey[600],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ToggleButtons(
-                renderBorder: false,
-                fillColor: Colors.grey[400],
-                children: widget.selectedProduct.combos.map((Combo element) {
-                  return ProductDetail(element.comboSizeName);
+            CustomToggleButton(
+                buttons: widget.selectedProduct.productSizes
+                    .map((ProductSize element) {
+                  return ProductDetail(element.sizeName);
                 }).toList(),
-                isSelected: _productCombos,
-                onPressed: (int newIndex) {
-                  selectedComboOptions.clear();
-                  widget.selectedProduct.combos[newIndex].comboItems
-                      .forEach((item) {
-                    selectedComboOptions.add(ComboOption(
-                        id: item.id,
-                        itemName: item.itemName,
-                        itemSize: item.itemSize));
-                  });
-                  if (selectedComboIndex != newIndex &&
-                      widget.selectedProduct.combos[newIndex].comboItems
-                          .where((item) => item.hasOptions)
-                          .isNotEmpty) {
-                    hasOp = true;
-                    _comboOptionsList.clear();
-                    for (int i = 0;
-                        i <
-                            widget.selectedProduct.combos[newIndex].comboItems
-                                .firstWhere((item) => item.hasOptions)
-                                .productOptions
-                                .length;
-                        i++) {
-                      if (i == 0)
-                        _comboOptionsList.add(true);
-                      else
-                        _comboOptionsList.add(false);
-                    }
-                  } else
-                    hasOp = false;
-                  if (selectedComboIndex == -1) {
+                buttonsStatus: _productSizes,
+                onChange: (int newIndex) {
+                  if (newIndex != selectedSizeIndex) {
                     setState(() {
-                      _productCombos[newIndex] = true;
+                      _productSizes[selectedSizeIndex] = false;
+                      _productSizes[newIndex] = true;
                     });
-                    selectedComboIndex = newIndex;
-                  } else if (newIndex != selectedComboIndex) {
-                    setState(() {
-                      _productCombos[selectedComboIndex] = false;
-                      _productCombos[newIndex] = true;
-                    });
-                    selectedComboIndex = newIndex;
-                  } else {
-                    setState(() {
-                      _productCombos[selectedComboIndex] = false;
-                    });
-                    selectedComboIndex = -1;
+                    selectedSizeIndex = newIndex;
                   }
-                },
-              ),
+                }),
+            CustomToggleButton(
+              lineBelow: false,
+              buttons: widget.selectedProduct.combos.map((Combo element) {
+                return ProductDetail(element.comboSizeName);
+              }).toList(),
+              buttonsStatus: _productCombos,
+              onChange: (int newIndex) {
+                selectedComboOptions.clear();
+                widget.selectedProduct.combos[newIndex].comboItems
+                    .forEach((item) {
+                  selectedComboOptions.add(ComboOption(
+                      id: item.id,
+                      itemName: item.itemName,
+                      itemSize: item.itemSize));
+                });
+                if (selectedComboIndex != newIndex &&
+                    widget.selectedProduct.combos[newIndex].comboItems
+                        .where((item) => item.hasOptions)
+                        .isNotEmpty) {
+                  hasOp = true;
+                  _comboOptionsList.clear();
+                  for (int i = 0;
+                      i <
+                          widget.selectedProduct.combos[newIndex].comboItems
+                              .firstWhere((item) => item.hasOptions)
+                              .productOptions
+                              .length;
+                      i++) {
+                    if (i == 0)
+                      _comboOptionsList.add(true);
+                    else
+                      _comboOptionsList.add(false);
+                  }
+                } else
+                  hasOp = false;
+                if (selectedComboIndex == -1) {
+                  setState(() {
+                    _productCombos[newIndex] = true;
+                  });
+                  selectedComboIndex = newIndex;
+                } else if (newIndex != selectedComboIndex) {
+                  setState(() {
+                    _productCombos[selectedComboIndex] = false;
+                    _productCombos[newIndex] = true;
+                  });
+                  selectedComboIndex = newIndex;
+                } else {
+                  setState(() {
+                    _productCombos[selectedComboIndex] = false;
+                  });
+                  selectedComboIndex = -1;
+                }
+              },
             ),
             if (selectedComboIndex != -1 && hasOp)
               Container(
-                  child: ToggleButtons(
-                renderBorder: false,
-                fillColor: Colors.grey[400],
-                children: widget
-                    .selectedProduct.combos[selectedComboIndex].comboItems
-                    .firstWhere((item) => item.hasOptions)
-                    .productOptions
-                    .map((ComboOption element) {
-                  return ProductDetail(element.itemName);
-                }).toList(),
-                isSelected: _comboOptionsList,
-                onPressed: (int newIndex) {
-                  if (newIndex != selectedComboOptionIndex) {
-                    setState(() {
-                      _comboOptionsList[selectedComboOptionIndex] = false;
-                      _comboOptionsList[newIndex] = true;
-                    });
-                    selectedComboOptionIndex = newIndex;
-                  }
-                  final index = widget
+                child: CustomToggleButton(
+                  lineBelow: false,
+                  buttons: widget
                       .selectedProduct.combos[selectedComboIndex].comboItems
-                      .indexWhere((element) => element.hasOptions);
-                  selectedComboOptions.removeAt(index);
-                  final selectedOption = widget
-                      .selectedProduct
-                      .combos[selectedComboIndex]
-                      .comboItems[index]
-                      .productOptions[newIndex];
-                  selectedComboOptions.add(ComboOption(
-                      itemName: selectedOption.itemName,
-                      itemSize: selectedOption.itemSize,
-                      id: selectedOption.id));
-                },
-              )),
-            Container(
-              height: 2.0,
-              color: Colors.grey[600],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ToggleButtons(
-                direction: Axis.vertical,
-                constraints: BoxConstraints(),
-                renderBorder: false,
-                fillColor: Colors.grey[400],
-                children: widget.selectedProduct.extras.map((Extra element) {
-                  return ProductDetail(element.extraName);
-                }).toList(),
-                isSelected: _productExtras,
-                onPressed: (int newIndex) {
-                  setState(() {
-                    _productExtras[newIndex] = !_productExtras[newIndex];
-                  });
-                  if (_productExtras[newIndex])
-                    selectedExtra.add(widget.selectedProduct.extras[newIndex]);
-                  else
-                    selectedExtra
-                        .remove(widget.selectedProduct.extras[newIndex]);
-                },
+                      .firstWhere((item) => item.hasOptions)
+                      .productOptions
+                      .map((ComboOption element) {
+                    return ProductDetail(element.itemName);
+                  }).toList(),
+                  buttonsStatus: _comboOptionsList,
+                  onChange: (int newIndex) {
+                    if (newIndex != selectedComboOptionIndex) {
+                      setState(() {
+                        _comboOptionsList[selectedComboOptionIndex] = false;
+                        _comboOptionsList[newIndex] = true;
+                      });
+                      selectedComboOptionIndex = newIndex;
+                    }
+                    final index = widget
+                        .selectedProduct.combos[selectedComboIndex].comboItems
+                        .indexWhere((element) => element.hasOptions);
+                    selectedComboOptions.removeAt(index);
+                    final selectedOption = widget
+                        .selectedProduct
+                        .combos[selectedComboIndex]
+                        .comboItems[index]
+                        .productOptions[newIndex];
+                    selectedComboOptions.add(ComboOption(
+                        itemName: selectedOption.itemName,
+                        itemSize: selectedOption.itemSize,
+                        id: selectedOption.id));
+                  },
+                ),
               ),
-            ),
             Container(
               height: 2.0,
               color: Colors.grey[600],
+            ),
+            CustomToggleButton(
+              axisDirection: Axis.vertical,
+              shrink: BoxConstraints(),
+              buttons: widget.selectedProduct.extras.map((Extra element) {
+                return ProductDetail(element.extraName);
+              }).toList(),
+              buttonsStatus: _productExtras,
+              onChange: (int newIndex) {
+                setState(() {
+                  _productExtras[newIndex] = !_productExtras[newIndex];
+                });
+                if (_productExtras[newIndex])
+                  selectedExtra.add(widget.selectedProduct.extras[newIndex]);
+                else
+                  selectedExtra.remove(widget.selectedProduct.extras[newIndex]);
+              },
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
