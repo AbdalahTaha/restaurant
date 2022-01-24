@@ -89,6 +89,7 @@ class Cart with ChangeNotifier {
           quantity: existingItem.quantity - 1,
           productId: existingItem.productId,
           cartItemTotalPrice: existingItem.cartItemTotalPrice,
+          selectedComboOptions: existingItem.selectedComboOptions,
         ),
       );
       notifyListeners();

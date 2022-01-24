@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant_test/widgets/cart_item.dart';
 import '../providers/cart.dart';
+import './invoice.dart';
 
 class CartScreen extends StatelessWidget {
   @override
@@ -12,6 +13,14 @@ class CartScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Cart'),
         centerTitle: true,
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              CreateInvoice().saveInvoice(cart);
+            },
+            child: Text('CheckOut'),
+          )
+        ],
       ),
       body: Column(
         children: [
@@ -29,7 +38,6 @@ class CartScreen extends StatelessWidget {
             child: ListView.builder(
                 itemCount: cart.cartItems.length,
                 itemBuilder: (context, i) {
-                  // print(cart.cartItems.values.toList()[i].cartItemTotalPrice);
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ItemInCart(
@@ -37,15 +45,6 @@ class CartScreen extends StatelessWidget {
                         cartItemKey: cart.cartItems.keys.toList()[i]),
                   );
                 }),
-            // ListView(
-            //     children: cart.cartItems.entries.map((cartItem) {
-            //   print(cartItem.value.productName);
-            //   return Padding(
-            //     padding: const EdgeInsets.all(8.0),
-            //     child: ItemInCart(
-            //         cartItem: cartItem.value, cartItemKey: cartItem.key),
-            //   );
-            // }).toList()),
           ),
         ],
       ),
