@@ -7,7 +7,7 @@ import '../widgets/invoice_item.dart';
 
 class CreateInvoice {
   final pdf = Document();
-  final file = File("C:\\Users\\KDS\\Downloads\\example_invoice.pdf");
+  final file = File("assets/example_invoice.pdf");
   void saveInvoice(Cart cart) async {
     pdf.addPage(
       Page(
