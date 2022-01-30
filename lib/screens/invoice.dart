@@ -4,6 +4,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import '../providers/cart.dart';
 import '../widgets/invoice_item.dart';
+import 'package:printing/printing.dart';
 
 class CreateInvoice {
   final pdf = Document();
@@ -40,8 +41,17 @@ class CreateInvoice {
     );
     try {
       await file.writeAsBytes(await pdf.save());
+      print(await Printing.listPrinters().then((printers) => printers.first));
+      // await Printing.directPrintPdf(printer: await Printing.listPrinters().then((availablePrinters) => availablePrinters.first), onLayout: (PdfPageFormat format) async => pdf.save(),format:PdfPageFormat.roll80 );
+      // print(await Printing.info());
+      await Printing.layoutPdf(
+          onLayout: (PdfPageFormat format) async => pdf.save(),
+          format: PdfPageFormat.roll80);
     } catch (e) {
       print(e);
     }
+    // return PdfPreview(
+    //   build: (format) => pdf.save(),
+    // );
   }
 }

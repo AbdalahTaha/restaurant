@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:restaurant_test/widgets/cart_item.dart';
 import '../providers/cart.dart';
 import './invoice.dart';
+import 'package:printing/printing.dart';
 
 class CartScreen extends StatelessWidget {
   @override
@@ -15,8 +16,15 @@ class CartScreen extends StatelessWidget {
         centerTitle: true,
         actions: [
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               CreateInvoice().saveInvoice(cart);
+              // showDialog(
+              //     context: context,
+              //     builder: (context) {
+              //       return Dialog(
+              //         child: invoice,
+              //       );
+              //     });
             },
             child: Text('CheckOut'),
           )
