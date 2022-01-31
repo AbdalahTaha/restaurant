@@ -27,6 +27,9 @@ class Authenticate {
     if (response.statusCode != 200) {
       throw jsonDecode(response.body)['message'];
     }
+    prefs.setString("logoUrl", jsonDecode(response.body)["user"]["brand_logo"]);
+    prefs.setString("hotline", jsonDecode(response.body)["user"]["hotline"]);
+    prefs.setString("slogan", jsonDecode(response.body)["user"]["slogan"]);
     accessToken = jsonDecode(response.body)['access_token'];
   }
 }
