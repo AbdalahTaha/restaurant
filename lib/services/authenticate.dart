@@ -25,11 +25,17 @@ class Authenticate {
       body: body,
     );
     if (response.statusCode != 200) {
+      print("jsonDecode(response.body)['message']");
       throw jsonDecode(response.body)['message'];
     }
-    prefs.setString("logoUrl", jsonDecode(response.body)["user"]["brand_logo"]);
-    prefs.setString("hotline", jsonDecode(response.body)["user"]["hotline"]);
-    prefs.setString("slogan", jsonDecode(response.body)["user"]["slogan"]);
-    accessToken = jsonDecode(response.body)['access_token'];
+    try {
+      prefs.setString(
+          "logoUrl", jsonDecode(response.body)["user"]["brand_logo"]);
+      prefs.setString("hotline", jsonDecode(response.body)["user"]["hotline"]);
+      prefs.setString("slogan", jsonDecode(response.body)["user"]["slogan"]);
+      accessToken = jsonDecode(response.body)['access_token'];
+    } catch (e) {
+      throw e;
+    }
   }
 }
